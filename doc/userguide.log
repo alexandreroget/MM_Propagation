@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.7.30)  9 DEC 2021 18:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.7.30)  4 JAN 2022 17:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1095,6 +1095,13 @@ your preamble.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 
+LaTeX Warning: Reference `sec:examples' on page 1 undefined on input line 78.
+
+
+LaTeX Warning: Reference `sec:comparison' on page 1 undefined on input line 81.
+
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 101--102
 
  []
@@ -1126,67 +1133,64 @@ LaTeX Font Info:    Trying to load font information for TS1+cmtt on input line
 (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmtt.fd
 File: ts1cmtt.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 ) [3]
-Underfull \hbox (badness 10000) in paragraph at lines 302--305
+Underfull \hbox (badness 10000) in paragraph at lines 302--308
 
  []
 
 
-Overfull \hbox (4.19339pt too wide) in paragraph at lines 322--355
+Overfull \hbox (4.19339pt too wide) in paragraph at lines 325--358
 [][] 
  []
 
-
-Underfull \vbox (badness 2035) has occurred while \output is active []
-
- [4]
-Underfull \hbox (badness 10000) in paragraph at lines 356--358
-
- []
-
-
+[4]
 Underfull \hbox (badness 10000) in paragraph at lines 359--361
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 368--369
+Underfull \hbox (badness 10000) in paragraph at lines 362--364
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 370--371
+Underfull \hbox (badness 10000) in paragraph at lines 371--372
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 372--373
+Underfull \hbox (badness 10000) in paragraph at lines 373--374
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 374--375
+Underfull \hbox (badness 10000) in paragraph at lines 375--376
 
  []
 
-[5] [6]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 397.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 397.
+
+Underfull \hbox (badness 10000) in paragraph at lines 377--378
+
+ []
+
+[5]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 388.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 388.
  (./userguide.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 397.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 397.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 388.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 388.
 Package rerunfilecheck Info: File `userguide.out' has not changed.
-(rerunfilecheck)             Checksum: 68E8DFFFA0AACEEE54A04D2BED8D9828;957.
+(rerunfilecheck)             Checksum: B8BB39B978C0FDF69ED3723A767427EA;841.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 397.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 388.
  ) 
 Here is how much of TeX's memory you used:
- 28634 strings out of 483154
- 675598 string characters out of 5965023
+ 28629 strings out of 483154
+ 675552 string characters out of 5965023
  1048010 words of memory out of 5000000
- 42957 multiletter control sequences out of 15000+600000
+ 42955 multiletter control sequences out of 15000+600000
  546953 words of font info for 77 fonts, out of 8000000 for 9000
  175 hyphenation exceptions out of 8191
  63i,11n,98p,734b,609s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1206,10 +1210,10 @@ fb></usr/share/texlive/texmf-dist/fonts/type1/public/mathabx-type1/matha10.pfb>
 </usr/share/texlive/texmf-dist/fonts/type1/public/mathabx-type1/matha8.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/mathabx-type1/mathx10.pfb></usr/s
 hare/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on userguide.pdf (6 pages, 193938 bytes).
+Output written on userguide.pdf (5 pages, 191971 bytes).
 PDF statistics:
- 204 PDF objects out of 1000 (max. 8388607)
- 177 compressed objects within 2 object streams
- 33 named destinations out of 1000 (max. 500000)
- 141 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 189 PDF objects out of 1000 (max. 8388607)
+ 163 compressed objects within 2 object streams
+ 30 named destinations out of 1000 (max. 500000)
+ 125 words of extra memory for PDF output out of 10000 (max. 10000000)
 
