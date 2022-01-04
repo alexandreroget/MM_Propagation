@@ -1,0 +1,388 @@
+\documentclass[11pt]{amsart} 
+\usepackage{amsmath,amssymb,a4wide} 
+\usepackage{color}
+\usepackage{mathrsfs}
+\usepackage{dsfont}
+% \usepackage{showkeys}
+\usepackage{hyperref}
+\usepackage{mathabx}
+\usepackage{tikz,pgfplots}
+\newtheorem{theorem}{Theorem} 
+\newtheorem{lemma}[theorem]{Lemma} 
+\newtheorem{prop}[theorem]{Proposition} 
+\newtheorem{remark}[theorem]{Remark} 
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{defi}[theorem]{Definition}
+
+\newcommand{\pr}{\noindent  {\bf \textit{Proof : }}}
+
+\newcommand{\cqfd}{{\nobreak\hfil\penalty50\hskip2em\hbox{}\nobreak\hfil
+$\square$\qquad\parfillskip=0pt\finalhyphendemerits=0\par\medskip}}
+
+\newcommand{\red}{\textcolor{red}}
+
+\newcommand{\dis}{\displaystyle}
+\newcommand{\dt}{\delta t}
+
+\newcommand{\tore}{\Omega}
+
+\newcommand{\Z}{{\mathbb Z}} 
+\newcommand{\R}{{\mathbb R}} 
+\newcommand{\C}{{\mathbb C}} 
+\newcommand{\N}{{\mathbb N}} 
+\newcommand{\TD}{{\mathbb T}} 
+\newcommand{\T}{{\mathbb T}} 
+\newcommand{\E}{{\mathcal E}}
+\newcommand{\dd}{{\rm d}}
+\newcommand{\ii}{{\rm i}}
+\newcommand{\name}{{\rm MM\_Propagation }}
+
+\let\pa\partial
+\let\na\nabla 
+\let\eps\varepsilon 
+
+\usepackage{color}
+\usepackage{caption}
+
+\title[MM\_Propagation userguide]
+{Simulation of short pulses propagation in multimode optical fibers}
+
+\author[A. Roget]{Alexandre Roget}
+\address[A. Roget]{Inria, Univ. Lille, CNRS, UMR 8524}
+
+\begin{document}
+
+\setlength{\parindent}{0pt}
+
+%%% TITLE AND AMS CLASSIFICATION
+
+\maketitle
+
+\section*{Introduction}
+This user guide describes how to use the C++ software \name, developped in the Paradyse
+team of Inria by Alexandre Roget.
+This code simulates the propagation of short pulses in multimode optical fibers.
+Starting from physical parameters of the fiber
+(length of the fiber, number of modes of the fiber, dispersion coefficients of the modes,
+nonlinear coupling coefficients, Raman factor, {\it etc})
+and from an input signal in the fiber, the code computes an approximation of the corresponding
+output signal at the end of the fiber.
+Numerical discretization parameters (in space and time) can be set by the user as well.
+For convenience, the input parameters can be set in a MatLab {\tt .mat} file and
+the output is stored in a MatLab {\tt .mat} file as well.
+
+This user guide is organised as follows.
+In section \ref{sec:equations}, we describe the physical model solved by \name.
+In section \ref{sec:method}, we describe the numerical method used by \name.
+In section \ref{sec:setup}, we describe the libraries required to use \name and how to compile the C++ code.
+In section \ref{sec:examples}, we provide a set of data to illustrate on an example
+how the \name
+code works.
+In section \ref{sec:comparison}, we compare the performance of \name
+with that of other existing software for the same problem.
+
+\section{The physical model}
+\label{sec:equations}
+
+The physical model consists in the set of $M\geq 1$ coupled nonlinear Schr\"odinger
+equations with nonlocal terms incorporating the Raman effect, of the form
+
+\begin{eqnarray}
+  \label{eq:original}
+  \lefteqn{\partial_Z \Phi_{p}(Z,T) =
+  \ii\beta_0^{(p)} \Phi_p
+  -\beta_1^{(p)} \partial_T \Phi_p
+  + \ii\frac{\beta_2^{(p)}}{2} \partial_T^2\Phi_p(Z,T)} \\
+  & & +\ii\gamma\sum_{k,\ell,m} Q^{(p)}_{k,\ell,m}
+  \left(\Phi_k (Z,T) \left[(1-f_R)\Phi_\ell (Z,T)\overline{\Phi_m}(Z,T)
+  + f_R\left(h_R\star (\Phi_\ell\overline{\Phi_m})\right)(Z,T)\right]\right) \nonumber
+\end{eqnarray}
+
+$\forall p\in\{1,\dots,M\}$ \\
+
+where $\Phi_{p}$ is the field envelope of the $p$th mode, $T$ is the time in a reference frame, $Z$ is the distance along the fiber, $(\beta_0^{(p)})$, $(\beta_1^{(p)})$ and $(\beta_2^{(p)})$ are the dispersion coefficients for the $p$th mode, $\gamma$ is the nonlinearity constant, $f_R\in[0,1]$ is the fractional contribution of the Raman response, the $M^3$ real numbers $(Q^{(p)}_{k,\ell,m})$ are the coupling coefficients for the $p$th mode, and $\tau \mapsto h_R(\tau)$ is the delayed Raman response function that can be written in the form:
+
+\begin{equation}
+  \label{eq:raman}
+  h_R(t) = \left( \tau_1^{-2} + \tau_2^{-2} \right) \tau_1 {\rm e}^{(-t/\tau_2)} sin(t/\tau_1)
+\end{equation}
+where $\tau_1$ and $\tau_2$ are the damping time of vibrations. \\
+
+The Lawson-RK method operates with dimensionless values. Thus a conversion is needed. \\
+
+We assume that the pulse has:
+\begin{itemize}
+  \item peak power $P_0>0$,
+  \item pulse width $T_0>0$,
+\end{itemize}
+and set, as is classical
+\begin{equation*}
+  L_D = \frac{T_0^2}{\max_p |\beta_2^p|},
+  \qquad
+  L_{NL} = \frac{1}{\gamma P_0}
+  \qquad \text{and} \qquad
+  N^2 = \frac{L_D}{L_{NL}} = \frac{T_0^2 \gamma P_0}{\max_p |\beta_2^p|}
+  \qquad \text{and} \qquad
+  \mathcal Q = \max_{k\ell,m,p} |Q_{k\,ell,m}^{(p)}|.
+\end{equation*}
+Then, letting
+\begin{equation*}
+  z=\frac{Z}{L_D},
+  \qquad
+  t=\frac{T}{T_0},
+  \qquad\text{and}\qquad
+  \varphi_p (z,t) = \sqrt{|\gamma| L_D} \times \sqrt{\mathcal Q} \times \Phi_p(Z,T),
+\end{equation*}
+one obtains that equation \eqref{eq:original} is equivalent to
+\begin{eqnarray}
+  \label{eq:originaldimensionless}
+  \lefteqn{\partial_z \varphi_p(z,t) =
+  i \frac{T_0^2}{\max_q |\beta_2^{(q)}|} \beta_0^{(p)} \varphi_p(z,t)
+  - i \frac{T_0}{\max_q |\beta_2^{(q)}|} \beta_1^{(p)} \partial_t \varphi_p(z,t)
+  + i \frac12 \frac{\beta_2^{(p)}}{\max_q |\beta_2^{(q)}|}\partial_t^2 \varphi_p(z,t)} \\
+  & & +\ii \text{sign}(\gamma) \sum_{k,\ell,m} \frac{Q^{(p)}_{k,\ell,m}}{\mathcal Q}
+  \left(\varphi_k (z,t) \left[(1-f_R)\varphi_\ell (z,t)\overline{\varphi_m}(z,t) 
+  + f_RT_0\left(h_R^{T_0}\star(\varphi_\ell\overline{\varphi_m})\right)(z,t)\right]\right) \nonumber
+\end{eqnarray}
+where the notations are introduced below.
+
+\section{LawsonRK Method}
+\label{sec:method}
+
+We assume periodic boundary conditions in time, and work with $k\in\Z$ as the dual Fourier variable
+of time. The symbol of the operator $L_p$ defined by
+\begin{equation}
+  \label{eq:defLp}
+  L_p \varphi =
+   \ii\beta_0^{(p)} \varphi
+  -\beta_1^{(p)} \partial_t \varphi
+  +\ii\frac{\beta_2^{(p)}}{2} \partial_t^2\varphi,
+\end{equation}
+is therefore equal to
+\begin{equation}
+  \label{eq:symboleLp}
+  \mathcal L_p(k) = \ii\beta_0^{(p)}-\ii\beta^{(p)}_1 \alpha(k)-\ii\frac{\beta_2^{(p)}}{2}\alpha^2(k),
+\end{equation}
+where $-\alpha(k)^2$ is the $k^{\rm th}$ eigenvalue of the Laplace operator with periodic boundary
+conditions ({\it e.g.} $\alpha(k)=\frac{2\pi}{T}k$ if $T$ denotes the time period).
+Note that $\mathcal L$ has only purely imaginary values; therefore it is anti-symmetric.
+
+Setting for all $p\in\{1,\dots,M\}$,
+\begin{equation}
+  \label{eq:chgtvar}
+  \psi_p(z,t) = {\rm e}^{-zL_p} \varphi_p,
+\end{equation}
+we obtain the following equivalent equations for \eqref{eq:originaldimensionless}
+\begin{equation}
+  \label{eq:newpsi}
+  \resizebox{0.94\hsize}{!}{$
+  \partial_z \psi_p = \ii\gamma {\rm e}^{-z L_p} \sum_{k,\ell,m} Q^{(p)}_{k,\ell,m}
+  \left( {\rm e}^{z L_k}\psi_k \right) \left[
+    (1-f_R) \left(
+      \left( {\rm e}^{z L_\ell} \psi_\ell \right)
+      \overline{ \left( {\rm e}^{z L_m} \psi_m \right) } \right)
+    + f_R \left(
+      h_R \star \left(
+        \left( {\rm e}^{z L_\ell} \psi_\ell \right)
+        \overline{ \left( {\rm e}^{z L_m} \psi_m \right) } \right)
+    \right)
+  \right] $}
+\end{equation}
+
+Putting the $M$ unknowns in a column-vector $\Psi$ allows to write \eqref{eq:newpsi} under the form
+\begin{equation}
+  \label{eq:psigroupe}
+  \partial_z \Psi(z,t) = N(z,\Psi(z,t)).
+\end{equation}
+
+Assume $s\in\N^\star$ is given and an explicit Runge--Kutta method with coefficients
+$(a_{i,j})_{1\leq j<i\leq s}$, $(c_{i})_{1\leq i\leq s}$ and $(b_i)_{1\leq i\leq s}$ is given.
+Applying it to \eqref{eq:psigroupe} yields to the following explicit computations starting
+from $\Psi_n$.
+For all $i\in\{1,\dots,s\}$, compute
+\begin{equation}
+  \label{eq:RKintern}
+  \Psi_{n,i}=\Psi_n+h\sum_{j=1}^{i-1} a_{i,j} N(z_n+c_j h,\Psi_{n,j}),
+\end{equation}
+(with $0$ as a sum when $i=1$), and then compute
+\begin{equation}
+  \label{eq:RKexplicit}
+  \Psi_{n+1} = \Psi_n + h\sum_{i=1}^s b_i N(z_n+c_i h, \Psi_{n,i}).
+\end{equation}
+
+We implemented the method above involving the celebrated RK4 method, for which $s=4$ and the order is $4$. Its Butcher tableau is given by
+\begin{equation*}
+  \renewcommand\arraystretch{1.2}
+  \begin{array}
+  {c|cccc}
+    0 & 0 & 0 & 0 & 0\\
+    \frac{1}{2} &  \frac{1}{2} & 0 & 0 & 0\\
+    \frac{1}{2} & 0 & \frac12 & 0 & 0\\
+    1 & 0 & 0 & 1 & 0  \\
+    \hline
+    & \frac{1}{6} & \frac{1}{3} & \frac13 & \frac16
+  \end{array}.
+\end{equation*}
+
+Another class of $6$-order explicit Runge--Kutta methods with $s=7$ stages is given \cite{Butcher64} by
+\begin{equation*}
+  \begin{array}{c|ccccccc}
+    0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \mu & \mu & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \frac23 & \frac23-\frac{2}{9\mu} & \frac{2}{9\mu} & 0 & 0 & 0 & 0 & 0 \\
+    \frac13 & \frac{5}{12}-\frac{1}{9\mu} & \frac{1}{9\mu} & -\frac{1}{12}  & 0 & 0 & 0 & 0\\
+    \frac12 & \frac{17}{16}-\frac{3}{8\mu} & \frac{3}{8\mu} & -\frac{3}{16} & \frac{-3}{8} & 0 & 0 & 0\\
+    \frac12 & \frac{17}{16}-\frac{3}{8\mu} + \frac{1}{4\lambda} & \frac{3}{8\mu} & - \frac{3}{16} - \frac{3}{4\lambda} & -\frac{3}{8}-\frac{3}{2\lambda} & \frac{2}{\lambda} & 0 & 0\\
+    1 & -\frac{27}{44} + \frac{3}{11\mu} & -\frac{3}{11\mu} & \frac{63}{44} & \frac{18}{11} & 4\frac{\lambda-4}{11} & -\frac{4\lambda}{11} & 0 \\
+    \hline
+    & \frac{1}{120} & 0 & \frac{27}{40} & \frac{27}{40} & \frac{\lambda-8}{15} & -\frac{\lambda}{15} & \frac{11}{120}
+  \end{array},
+\end{equation*}
+for $\lambda,\mu\in\R\setminus\{0\}$.
+
+In the end, after $N\in\N^\star$ "time" steps in the fiber,
+one can come back to the original variables by inverting \eqref{eq:chgtvar} and computing for all $p\in\{1,\dots,M\}$,
+\begin{equation*}
+  \varphi_N^{(p)} = {\rm e}^{z_N L_p} \psi_N^{(p)}.
+\end{equation*}
+
+\section{Setup}
+\label{sec:setup}
+
+In this section, we describe the libraries required to compile \name,
+and how to compile it on your computer.
+
+\subsection{Compiler}
+
+The \name code is compiled with the GNU C++ compiler g++. 
+Check g++ compiler version information:     
+
+{\tt \$ g++ --version}
+
+If your system doesn’t have the g++ compiler, you can type the following command in your terminal:
+
+{\tt \$ sudo apt install g++}
+
+\subsection{FFTW}
+
+The numerical one step method described in section \ref{sec:method}
+is coupled with a uniform time discretization and the action of dispersive operators
+along the fiber is computed {\it via} fast Fourier transforms.
+To do so, \name
+requires the \href{http://www.fftw.org/fftw2\_doc/fftw\_6.html}{FFTW},
+which is a C subroutine library for computing the Discrete Fourier Transform (DFT)
+in one or more dimensions, of arbitrary input size, and of both real and complex data. Get the latest stable release of FFTW on the \href{http://www.fftw.org/download.html}{download page}.
+
+\subsection{OpenMP}
+
+The compilation of \name
+also requires the application programming interface \href{https://www.openmp.org/}{OpenMP}
+that supports multi-platform shared-memory multiprocessing. If OpenMP is not featured in the compiler, you can configure it by running the following command in your terminal:
+
+{\tt \$ sudo apt install libomp-dev}
+
+\subsection{MATIO}
+
+The compilation of \name
+requires the MATIO library
+that enables to read and write binary MATLAB {\tt .mat} files.
+The building procedure of MATIO is described in the \href{https://github.com/tbeu/matio}{github}.
+
+\subsection{MatLab}
+
+For convenience, inputs and outputs for \name
+are done using MatLab {\tt .mat} files.
+Therefore, a basic version of MatLab can be helpful (no specific package or toolbox is required).
+And the {\tt .mat} input files can be generated without MatLab if you prefer.
+
+\subsection{Compilation of MM\_Propagation}
+\label{subsec:compilation}
+Once all libraries are installed (see the previous subsections), one may write in a terminal:
+
+{\tt \$ git clone} https://github.com/alexandreroget/MM_Propagation \\
+{\tt \$ mkdir build} \\
+{\tt \$ cd build} \\
+{\tt \$ cmake..} \\
+{\tt \$ make} \\
+{\tt \$ sudo make install} \\
+
+The installation is now complete.
+
+\section{Use MM\_Propagation}
+\label{sec:run}
+
+We describe in this section how to set the physical and numerical parameters for the computation
+of an approximated output in the fiber by \name  (subsection \ref{subsec:parameters})
+and then how to run \name  with these input parameters (subsection \ref{subsec:howtorun}).
+
+
+\subsection{Set input parameters}
+\label{subsec:parameters}
+
+Before doing any propagation simulations, input parameters have to be set.
+The \name code gets them from a {\tt .mat} file. Thus open MATLAB and set the following parameters:
+
+\begin{tabular}{|l|c|c|c|c|c|}
+  \hline
+  \bf{Parameter} & \bf{Notation} & \bf{Unit} & \bf{Variable name} & \bf{Data type} & \bf{Size} \\
+  \hline
+  Number of modes & $M$ & & n\_modes & integer & 1 \\
+  \hline
+  Fiber length & $L_0$ & $m$ & fiber\_length & float & 1 \\
+  \hline
+  Dispersion order & $D$ & & max\_dispersion\_order & integer & 1 \\
+  \hline
+  Dispersion coefficients & $\beta_i^{(p)}$ & $ps^2/m$ & dispersion\_coefficients & float & $M \times D$ \\
+  \hline
+  Coupling coefficients & $Q_{k,\ell,m}^{(p)}$ & $m^{-2}$ & coupling\_coefficients & float & $M^4$ \\
+  \hline
+  Number of points & $N_T$ & & N & integer & 1 \\
+  \hline
+  Time window & $T_{final}$ & $ps$ & time\_window & float & 1 \\
+  \hline
+  Pulse width & $T_0$ & $ps$ & pulse\_width & float & 1 \\
+  \hline
+  Input signal & $\Phi^{(p)}$ & W & initial\_condition & complex & $M \times N_T$ \\
+  \hline
+  Number of steps & $N_Z$ & $m$ & n\_steps & float & 1 \\
+  \hline
+  Runge-Kutta order & $s$ & & order\_RK & int & 1 \\
+  \hline
+  Nonlinearity constant & $\gamma$ & $W^{-1} m$ & nonlinearity\_const & float & 1 \\
+  \hline
+  Raman proportial & $f_R$ & & raman\_proportial & float & 1 \\
+  \hline
+  Raman parameters & $\tau_1$ and $\tau_2$ & $ps$ & raman\_parameters & float & 2 \\
+  \hline
+\end{tabular}
+
+Save input parameters in a {\tt .mat} file with the {\tt save} command.
+The \texttt{readMatFile} function of the \name code reads this file and convert MATLAB data. \\
+
+Variables names must be identical to those from the above tabular. Otherwise the function will not be able to read all input parameters.
+Arrays sizes must be valid too. For example, if the \texttt{initial\_field} array size is not equal to $M \times N$, then an error will occur and the program will not compute the pulse propagation. \\
+
+The {\tt setParameters.m} file shows an example of how to set input parameters.
+You can edit this file and adjust parameters for your simulation, or take it as a template.
+
+\subsection{Run MM\_Propagation}
+\label{subsec:howtorun}
+
+Once all input parameters have been set correctly, you can run the \name program. The number of threads \texttt{N\_THREADS} can bet set by typing in a terminal: \\
+
+{\tt \$ export OMP\_NUM\_THREADS = N\_THREADS} \\
+
+Then, type the following command in the terminal: \\
+
+{\tt \$ ./MM\_Propagation input\_parameters.mat output.mat} \\
+
+An error will occur if the input parameters {\tt .mat} file is not specified.
+On the other hand, the output filename is optional.
+If its filename and its repertory are not specified,
+then the simulation results are saved by default in the {\tt output.mat} file.
+
+\section*{Contact}
+
+Technical questions may be directed to Alexandre Roget (alexandre.roget@inria.fr).
+
+\end{document}
