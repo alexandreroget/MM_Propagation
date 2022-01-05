@@ -6,4 +6,4 @@ project(MM_Propagation)
 
 add_subdirectory(src)
 add_subdirectory(matio)
-# add_subdirectory(examples)
+add_subdirectory(examples)
