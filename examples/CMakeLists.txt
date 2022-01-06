@@ -18,10 +18,10 @@ foreach(f ${usage_examples})
   add_executable(${exampleName} ${f})
   
   target_link_libraries(${exampleName} PRIVATE MMPropagation ${FFTW_LIBRARIES} ${MATIO_LIBRARIES} OpenMP::OpenMP_CXX)
-  target_compile_options(mainMatio PRIVATE "${OpenMP_CXX_FLAGS}")
-  target_include_directories(mainMatio PUBLIC ${FFTW_INCLUDE_DIRS})
+  target_compile_options(${exampleName} PRIVATE "${OpenMP_CXX_FLAGS}")
+  target_include_directories(${exampleName} PUBLIC ${FFTW_INCLUDE_DIRS})
 
-  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${exampleName}
-  DESTINATION bin
-  RENAME ${CMAKE_PROJECT_NAME}-${exampleName})
+#  install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${exampleName}
+#  DESTINATION bin
+#  RENAME ${CMAKE_PROJECT_NAME}-${exampleName})
 endforeach(f)
