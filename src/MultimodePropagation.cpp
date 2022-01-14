@@ -5,7 +5,8 @@ typedef vector<ComplexArray> MultipleComplexArrays;
 
 
 MultimodePropagation::MultimodePropagation(struct SimulationParameters in) : 
-M(in.n_modes), nt(in.nt), time_window(in.time_window), nz(in.n_steps)
+M(in.n_modes), nt(in.nt), time_window(in.time_window), nz(in.n_steps), 
+phi_out(in.n_modes,ComplexArray(in.nt,complex<double>(0.,0.)))
 {
   double T0 = in.pulse_width;
   double t_final = time_window/T0;
@@ -29,7 +30,6 @@ M(in.n_modes), nt(in.nt), time_window(in.time_window), nz(in.n_steps)
   for(unsigned int p = 0 ; p < M ; p++) {
     phi_in.push_back(in.signal[p]);
     phi_in[p] *= conversion_factor;
-    phi_out.push_back(ComplexArray(nt,complex<double>(0.,0.)));
   }
 
   solver = new LawsonRK(M,

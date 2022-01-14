@@ -112,13 +112,13 @@ void readComplexData(mat_t *mat, matvar_t *matvar, char* variable_name, mat_comp
 void setDispersionCoefficients(const double* data, struct SimulationParameters& in, unsigned int data_size)
 {
   if(data_size == (in.n_modes * (in.max_dispersion_order + 1))) {
+    in.dispersion_coefficients = vector<doubleArray>(in.max_dispersion_order,doubleArray(in.n_modes));
+  
     for(unsigned int i = 0 ; i <= in.max_dispersion_order ; i++) {
-      doubleArray beta_i;
       for(unsigned int p = 0 ; p < in.n_modes ; p++) {
         unsigned int j = i*in.n_modes + p;
-        beta_i.push_back(data[j]);
+        in.dispersion_coefficients[i][p] = data[j];
       }
-      in.dispersion_coefficients.push_back(beta_i);
     }
   }
   else {
@@ -131,12 +131,13 @@ void setDispersionCoefficients(const double* data, struct SimulationParameters& 
 void setCouplingCoefficients(const double* data, struct SimulationParameters& in, unsigned int data_size)
 {
   if(data_size == pow(in.n_modes,4)) {
+    in.coupling_coefficients = vector<Sparse3DMatrix>(in.n_modes);
+  
     unsigned int M = in.n_modes;
     unsigned int M2 = M * M;
     unsigned int M3 = M2 * M;
   
     for(unsigned int p = 0 ; p < M ; p++) {
-      in.coupling_coefficients.push_back(Sparse3DMatrix());
       for(unsigned int k = 0 ; k < M ; k++) {
         for(unsigned int l = 0 ; l < M ; l++) {
           for(unsigned int m = 0 ; m < M ; m++) {
@@ -159,11 +160,12 @@ void setCouplingCoefficients(const double* data, struct SimulationParameters& in
 void setInitialFields(mat_complex_split_t* complex_data, struct SimulationParameters& in, unsigned int data_size)
 {
   if(data_size == (in.n_modes * in.nt)) {
+    in.signal = MultipleComplexArrays(in.n_modes,ComplexArray(in.nt));
+  
     double* Re = (double*)(complex_data->Re);
     double* Im = (double*)(complex_data->Im);
 
     for(unsigned int p = 0 ; p < in.n_modes ; p++) {
-      in.signal.push_back(ComplexArray(in.nt));
       for(unsigned int i = 0 ; i < in.nt ; i++) {
         unsigned int j = p*in.nt + i;
         in.signal[p][i] = complex<double>(Re[j],Im[j]);

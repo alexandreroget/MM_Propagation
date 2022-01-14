@@ -166,20 +166,20 @@ void RungeKutta::get_c(vector<double>& coeff) const
 MultipleComplexArrays RungeKutta::apply_method(const double h, const vector<MultipleComplexArrays> E, 
                                                const MultipleComplexArrays psi, Nonlinearity* f)
 {  
-  vector<MultipleComplexArrays> N;
+  vector<MultipleComplexArrays> N(s,MultipleComplexArrays(M,ComplexArray(nt)));
   
   // psi[p]_{n+1} = psi[p]
-  MultipleComplexArrays result;
+  MultipleComplexArrays result(M,ComplexArray(nt));
   for(unsigned int p = 0 ; p < M ; p++) {
-    result.push_back(psi[p]);
+    result[p] = psi[p];
   }
   
   for(unsigned int i = 0 ; i < s ; i++) {
     // psi_{n,i} = psi_n + h*sum_{j=0}^{i-1} [a_{i,j} * N_op_{n,j}]
-    MultipleComplexArrays psi_ni;
+    MultipleComplexArrays psi_ni(M,ComplexArray(nt));
     for(unsigned int p = 0 ; p < M ; p++) {
       // Initialize psi_{n,i} = psi_n
-      psi_ni.push_back(psi[p]);
+      psi_ni[p] = psi[p];
     
       // if (i == 0) then psi_{n,i} = psi_n
       // else psi_{n,i} = psi_n + h*sum_{j=0}^{i-1} [a_{i,j} * N_op_{n,j}]
@@ -191,7 +191,7 @@ MultipleComplexArrays RungeKutta::apply_method(const double h, const vector<Mult
     }
 
     // N(z_n+ci*h,psi_ni)
-    N.push_back(f->compute(E[i],psi_ni));
+    N[i] = f->compute(E[i],psi_ni);
 
     // psi[p]_{n+1} += b_i*h*N_op_{n,i}
     if(b[i] != 0.) {
@@ -208,7 +208,7 @@ MultipleComplexArrays RungeKutta::apply_method(const double h, const vector<Mult
 // Apply Runge Kutta method
 double RungeKutta::apply_method(const double h, const double lambda, const double y)
 {  
-  vector<double> f;
+  vector<double> f(s);
   double result = y;
   
   for(unsigned int i = 0 ; i < s ; i++) {
@@ -220,7 +220,7 @@ double RungeKutta::apply_method(const double h, const double lambda, const doubl
       }
     }
 
-    f.push_back(lambda*y_ni);
+    f[i] = lambda*y_ni;
 
     if(b[i] != 0.) {
       result += f[i]*(b[i]*h);

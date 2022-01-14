@@ -18,14 +18,11 @@ int main(int argc, char *argv[])
     
     MultimodePropagation mm_propagation(in);
   
-    MultipleComplexArrays phi_out;
-    for(unsigned int p = 0 ; p < in.n_modes ; p++) {
-      phi_out.push_back(ComplexArray(in.nt));
-    }
-  
+    MultipleComplexArrays phi_out(in.n_modes,ComplexArray(in.nt));
+
     for(unsigned int i = 0 ; i < 1 ; i++) {
       // unsigned int nz = (int) pow(2,(i+2));
-      unsigned int nz = 4096;
+      unsigned int nz = 8192;
       double t_start = omp_get_wtime();
       mm_propagation.computeLawsonRK(nz);
       double t_stop = omp_get_wtime();

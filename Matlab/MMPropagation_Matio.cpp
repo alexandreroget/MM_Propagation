@@ -23,10 +23,7 @@ int main(int argc, char *argv[])
     double t_stop = omp_get_wtime();
     double cpu_time = (t_stop - t_start);
   
-    MultipleComplexArrays phi_out;
-    for(unsigned int p = 0 ; p < in.n_modes ; p++) {
-      phi_out.push_back(ComplexArray(in.nt));
-    }
+    MultipleComplexArrays phi_out(in.n_modes,ComplexArray(in.nt));
     phi_out = mm_propagation.getResult();
   
     writeMatFile(phi_out,0.,"output_MMPropagation.mat");

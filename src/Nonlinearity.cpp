@@ -5,7 +5,8 @@ typedef vector<ComplexArray> MultipleComplexArrays;
 
 Nonlinearity::Nonlinearity(unsigned int M, unsigned int nt, double t_final, 
 double nonlinearity_const, vector<Sparse3DMatrix> coupling_coeff, double pulse_width) :
-M(M), nt(nt), t_final(t_final), gamma(nonlinearity_const), T0(pulse_width)
+M(M), nt(nt), t_final(t_final), gamma(nonlinearity_const), T0(pulse_width),
+U(M,ComplexArray(nt)), U_conj(M,ComplexArray(nt)), N(M,ComplexArray(nt)), Q(M,Sparse3DMatrix())
 {
   delta = (double) t_final/nt;
   gamma >= 0 ? sign_gamma = 1 : sign_gamma = -1;
@@ -21,11 +22,6 @@ M(M), nt(nt), t_final(t_final), gamma(nonlinearity_const), T0(pulse_width)
     fft[p] = new Forward_DFT(n_threads,nt);
     ifft[p] = new Backward_DFT(n_threads,nt);
   
-    U.push_back(ComplexArray(nt));
-    U_conj.push_back(ComplexArray(nt));
-    N.push_back(ComplexArray(nt));
-  
-    Q.push_back(Sparse3DMatrix());
     Q[p] = coupling_coeff[p];
 
     unsigned int n = Q[p].getSize();
@@ -99,13 +95,13 @@ MultipleComplexArrays Nonlinearity_withoutRaman::compute(MultipleComplexArrays E
   }
   
   unsigned int n = index_array.size();
-  MultipleComplexArrays A;
+  MultipleComplexArrays A(n,ComplexArray(nt));
   for(unsigned int j = 0 ; j < n ; j++) {
     unsigned int lm = index_array[j];
     unsigned int l = lm / M;
     unsigned int m = lm % M;
 
-    A.push_back(U[l] * U_conj[m]);
+    A[j] = U[l] * U_conj[m];
   }
   
   // N = i * exp[(-z_n+ci*h)*Lp] * sum_{k,l,m} Q^{(p)}_{k,l,m} * (U[k] * U[l] * conj(U[m]))
@@ -178,15 +174,15 @@ MultipleComplexArrays Nonlinearity_withRaman::compute(MultipleComplexArrays E_i,
   }
   
   unsigned int n = index_array.size();
-  MultipleComplexArrays A;
-  MultipleComplexArrays hR_conv_A;
+  MultipleComplexArrays A(n,ComplexArray(nt));
+  MultipleComplexArrays hR_conv_A(n,ComplexArray(nt));
   for(unsigned int j = 0 ; j < n ; j++) {
     unsigned int lm = index_array[j];
     unsigned int l = lm / M;
     unsigned int m = lm % M;
 
-    A.push_back(U[l] * U_conj[m]);
-    hR_conv_A.push_back(convolution_with_hR(A[j]));
+    A[j] = U[l] * U_conj[m];
+    hR_conv_A[j] = convolution_with_hR(A[j]);
   }
   
   // N = i * exp[(-z_n+ci*h)*Lp] * sum_{k,l,m} Q^{(p)}_{k,l,m} * (Kerr^{(p)} + Raman^{(p)})

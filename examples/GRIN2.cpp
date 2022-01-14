@@ -77,9 +77,9 @@ int main()
   in.pulse_width = sqrt(beta_2[0])/(SR*in.nonlinearity_const);
   in.time_window = t_final;
 
-  MultipleComplexArray phi_0;
-  phi_0.push_back(build_soliton(t_final/sqrt(beta_2[0]/2),nt,t0/sqrt(beta_2[0]/2),c*sqrt(2/beta_2[0]),SR*in.nonlinearity_const));
-  phi_0.push_back(build_soliton(t_final/sqrt(beta_2[0]/2),nt,-t0/sqrt(beta_2[0]/2),-c*sqrt(2/beta_2[0]),0.8*SR*in.nonlinearity_const));
+  MultipleComplexArray phi_0(2,ComplexArray(nt));
+  phi_0[0] = build_soliton(t_final/sqrt(beta_2[0]/2),nt,t0/sqrt(beta_2[0]/2),c*sqrt(2/beta_2[0]),SR*in.nonlinearity_const);
+  phi_0[1] = build_soliton(t_final/sqrt(beta_2[0]/2),nt,-t0/sqrt(beta_2[0]/2),-c*sqrt(2/beta_2[0]),0.8*SR*in.nonlinearity_const);
   
   for(unsigned int p = 0 ; p < 2 ; p++) {
     in.signal.push_back(phi_0[p]);
@@ -97,10 +97,7 @@ int main()
     //double t_stop = omp_get_wtime();
     //double cpu_time = (t_stop - t_start);
   
-    MultipleComplexArray phi_out;
-    for(unsigned int p = 0 ; p < 2 ; p++) {
-      phi_out.push_back(ComplexArray(nt));
-    }
+    MultipleComplexArray phi_out(2,ComplexArray(nt));
     phi_out = mm_propagation.getResult();
     
     char filename[100];

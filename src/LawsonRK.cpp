@@ -10,7 +10,7 @@ typedef vector<ComplexArray> MultipleComplexArrays;
 LawsonRK::LawsonRK(unsigned int M, double pulse_width, unsigned int nt, double t_final,
 unsigned int order_RK, double nonlinearity_const, vector<doubleArray> dispersion_coeff,
 vector<Sparse3DMatrix> coupling_coeff, double raman_proportion, double raman_parameters[2]) :
-M(M), nt(nt), t_final(t_final), RK(M,nt,order_RK)
+M(M), nt(nt), t_final(t_final), RK(M,nt,order_RK), psi(M,ComplexArray(nt)), L(M,ComplexArray(nt)), E1(M,ComplexArray(nt))
 {
   switch(order_RK) {
     case 6:
@@ -21,17 +21,10 @@ M(M), nt(nt), t_final(t_final), RK(M,nt,order_RK)
       break;  
   }
 
-  for(unsigned int p = 0 ; p < M ; p++) {
-    psi.push_back(ComplexArray(nt));
-    L.push_back(ComplexArray(nt));
-    E1.push_back(ComplexArray(nt));
-  }
-
   compute_L(dispersion_coeff);
 
-  for(unsigned int i = 0 ; i < s ; i++) {
-    E.push_back(E1);
-  }
+  E = vector<MultipleComplexArrays>(s,MultipleComplexArrays(M,ComplexArray(nt)));
+  
   RK.get_c(c);
   
   if(raman_proportion == 0.) {
@@ -102,11 +95,11 @@ void LawsonRK::compute_L(const vector<doubleArray> beta)
 
   unsigned int n_beta = beta[0].size();
   
-  vector<double> alpha;
+  vector<double> alpha(nt);
   for(unsigned int j = 0 ; j < nt ; j++) {
     int k;
     j<=nt/2 ? k=j : k=j-nt;
-    alpha.push_back((2*M_PI/t_final) * k);
+    alpha[j] = (2*M_PI/t_final) * k;
   }
 
   for(unsigned int p = 0 ; p < M ; p++) {
