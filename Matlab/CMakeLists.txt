@@ -7,7 +7,7 @@ find_package(FFTW REQUIRED)
 find_package(MATIO REQUIRED)
 find_package(OpenMP REQUIRED)
 
-add_executable(MMPropagation_Matio MMPropagation_Matio.cpp)
+add_executable(MMPropagation_Matio MMPropagation_Matio2.cpp)
 
 target_link_libraries(MMPropagation_Matio PRIVATE MMPropagation ${FFTW_LIBRARIES} ${MATIO_LIBRARIES} OpenMP::OpenMP_CXX)
 target_compile_options(MMPropagation_Matio PRIVATE "${OpenMP_CXX_FLAGS}")

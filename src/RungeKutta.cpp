@@ -4,13 +4,15 @@ typedef vector<ComplexArray> MultipleComplexArrays;
 
 
 // Constructor
-RungeKutta::RungeKutta(unsigned int M, unsigned int nt, unsigned int order) : M(M), nt(nt), s(order)
+RungeKutta::RungeKutta(unsigned int M, unsigned int nt, unsigned int order) : M(M), nt(nt)
 {
-  switch(s) {
+  switch(order) {
     case 6:
-      Butcher6(1.);
+      s = 7;
+      Butcher7(1.);
       break;
     default:
+      s = 4;
       Butcher4();
       break;
   }
@@ -49,30 +51,99 @@ void RungeKutta::Butcher4()
 }
 
 
-void RungeKutta::Butcher6(const double upsilon)
+void RungeKutta::Butcher7(const double nu)
 {
   a.push_back({0.});
-  a.push_back({upsilon});
-  a.push_back({(4.*upsilon-1.)/(8.*upsilon), 1./(8.*upsilon)});
-  a.push_back({(10.*upsilon-2.)/(27.*upsilon), 2./(27.*upsilon), (8.*upsilon)/(27.*upsilon)});
-  a.push_back({(56.-77.*upsilon+(8.-17.*upsilon)*sqrt(21.))/(392.*upsilon), (-8.*(7.+sqrt(21.))*upsilon)/(392.*upsilon), (48.*(7.+sqrt(21.))*upsilon)/(392.*upsilon), (-3.*(21.+sqrt(21.))*upsilon)/(392.*upsilon)});
-  a.push_back({(-5.*(287.*upsilon-56.-(59.*upsilon-8.)*sqrt(21.)))/(1960.*upsilon), (-40.*(7.-sqrt(21.)))/(1960.*upsilon), (320.*sqrt(21.)*upsilon)/(1960.*upsilon), (3.*(21.-121.*sqrt(21.))*upsilon)/(1960.*upsilon), (392.*(6.-sqrt(21.))*upsilon)/(1960.*upsilon)});
-  a.push_back({(15.*(30.*upsilon-8.)-7.*upsilon*sqrt(21.))/(180.*upsilon), 120./(180.*upsilon), (-40.*(5.+7.*sqrt(21.))*upsilon)/(180.*upsilon), (63.*(2.+3.*sqrt(21.))*upsilon)/(180.*upsilon), (-14.*(49.-9.*sqrt(21.))*upsilon)/(180.*upsilon), (70.*(7.+sqrt(2.1))*upsilon)/(180.*upsilon)});
   
-  b.push_back(9./180.);
-  b.push_back(0.);
-  b.push_back(64./180.);
-  b.push_back(0.);
-  b.push_back(49./180.);
-  b.push_back(49./180.);
-  b.push_back(9./180.);
+  a.push_back({nu});
   
+  a.push_back({(4.*nu-1.)/(8.*nu), 
+                1./(8.*nu)});
+  
+  a.push_back({(10.*nu-2.)/(27.*nu), 
+                2./(27.*nu), 
+                (8.*nu)/(27.*nu)});
+  
+  a.push_back({(56.-77.*nu+(8.-17.*nu)*sqrt(21.))/(392.*nu), 
+               (-8.*(7.+sqrt(21.)))/(392.*nu), 
+               (48.*(7.+sqrt(21.))*nu)/(392.*nu), 
+               (-3.*(21.+sqrt(21.))*nu)/(392.*nu)});
+  
+  a.push_back({(-5.*(287.*nu-56.-(59.*nu-8.)*sqrt(21.)))/(1960.*nu), 
+               (-40.*(7.-sqrt(21.)))/(1960.*nu), 
+               (320.*sqrt(21.)*nu)/(1960.*nu), 
+               (3.*(21.-121.*sqrt(21.))*nu)/(1960.*nu), 
+               (392.*(6.-sqrt(21.))*nu)/(1960.*nu)});
+  
+  a.push_back({(15.*((30.*nu-8.)-7.*nu*sqrt(21.)))/(180.*nu), 
+               120./(180.*nu), 
+               (-40.*(5.+7.*sqrt(21.))*nu)/(180.*nu), 
+               (63.*(2.+3.*sqrt(21.))*nu)/(180.*nu), 
+               (-14.*(49.-9.*sqrt(21.))*nu)/(180.*nu), 
+               (70.*(7.+sqrt(21.))*nu)/(180.*nu)});
+  
+  b.push_back(9/180.);
+  b.push_back(0.);
+  b.push_back(64/180.);
+  b.push_back(0.);
+  b.push_back(49/180.);
+  b.push_back(49/180.);
+  b.push_back(9/180.);
+
   c.push_back(0.);
-  c.push_back(upsilon);
-  c.push_back(1./2.);
-  c.push_back(2./3.);
+  c.push_back(nu);
+  c.push_back(1/2.);
+  c.push_back(2/3.);
   c.push_back((7.+sqrt(21.))/14.);
   c.push_back((7.-sqrt(21.))/14.);
+  c.push_back(1.);
+}
+
+
+void RungeKutta::Butcher7(const double lambda, const double mu)
+{
+  a.push_back({0.});
+  
+  a.push_back({mu});
+  
+  a.push_back({2/3.-2./(9.*mu),
+               2./(9.*mu)});
+  
+  a.push_back({5/12.-1./(9*mu), 
+               1./(9*mu), 
+               -1/12.});
+  
+  a.push_back({17/16.-3./(8.*mu), 
+               3./(8.*mu), 
+               -3/16., 
+               -3/8.});
+  
+  a.push_back({17/16.-3./(8*mu)+1./(4.*lambda), 
+               3./(8.*mu), 
+               -3/16.-3./(4.*lambda), 
+               -3/8.-3./(2.*lambda), 
+               2./lambda});
+  
+  a.push_back({-27/44.+3./(11.*mu), 
+               -3./(11.*mu), 63/44., 
+               18/11., 
+               4.*((lambda-4.)/11.), 
+               -(4.*lambda)/11.});
+  
+  b.push_back(1/120.);
+  b.push_back(0.);
+  b.push_back(27/40.);
+  b.push_back(27/40.);
+  b.push_back((lambda-8.)/15.);
+  b.push_back(-lambda/15.);
+  b.push_back(11/120.);
+  
+  c.push_back(0.);
+  c.push_back(mu);
+  c.push_back(2/3.);
+  c.push_back(1/3.);
+  c.push_back(1/2.);
+  c.push_back(1/2.);
   c.push_back(1.);
 }
 
@@ -127,6 +198,60 @@ MultipleComplexArrays RungeKutta::apply_method(const double h, const vector<Mult
       for(unsigned int p = 0 ; p < M ; p++) {
         result[p] += N[i][p]*(b[i]*h);
       }
+    }
+  }
+  
+  return result;
+}
+
+
+// Apply Runge Kutta method
+double RungeKutta::apply_method(const double h, const double lambda, const double y)
+{  
+  vector<double> f;
+  double result = y;
+  
+  for(unsigned int i = 0 ; i < s ; i++) {
+    double y_ni = y;
+
+    for(unsigned int j = 0 ; j < i ; j++) {
+      if(a[i][j] != 0.) {
+        y_ni += (f[j]*(a[i][j]*h));
+      }
+    }
+
+    f.push_back(lambda*y_ni);
+
+    if(b[i] != 0.) {
+      result += f[i]*(b[i]*h);
+    }
+  }
+  
+  return result;
+}
+
+
+// Apply Runge Kutta method
+double RungeKutta::apply_method(const double h, const double z_n, const double lambda, const double psi)
+{  
+  vector<double> f(s);
+  
+  double result = psi;
+  
+  for(unsigned int i = 0 ; i < s ; i++) {
+    double psi_ni = psi;
+    
+    for(unsigned int j = 0 ; j < i ; j++) {
+      if(a[i][j] != 0.) {
+        psi_ni += (f[j]*(a[i][j]*h));
+      }
+    }
+
+    f[i] = (lambda*cos(z_n+c[i]*h)*exp(lambda*sin(z_n+c[i]*h)))*psi_ni;
+
+    // psi[p]_{n+1} += b_i*h*N_op_{n,i}
+    if(b[i] != 0.) {
+      result += f[i]*(b[i]*h);
     }
   }
   

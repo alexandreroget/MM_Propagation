@@ -38,7 +38,7 @@ private:
   unsigned int nt;
   double t_final;
 
-  unsigned int order_RK;
+  unsigned int s;
   vector<double> c;
 
   MultipleComplexArrays L;

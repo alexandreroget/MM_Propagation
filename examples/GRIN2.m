@@ -4,7 +4,7 @@ filename = 'input_GRIN2';
 
 n_modes = 2;
 
-fiber_length = 32; % in m
+fiber_length = 16; % in m
 
 max_dispersion_order = 2;
 
@@ -16,18 +16,18 @@ alpha = 6.4341e12;
 coupling_coefficients = zeros(2,2,2,2);
 
 coupling_coefficients(1,1,1,1) = alpha;
-% coupling_coefficients(1,1,1,2) = alpha/3;
+coupling_coefficients(1,1,1,2) = alpha/3;
 coupling_coefficients(1,1,2,2) = alpha/2;
-% coupling_coefficients(1,2,2,2) = -alpha/3;
+coupling_coefficients(1,2,2,2) = -alpha/3;
 
-% coupling_coefficients(2,1,1,1) = -alpha/3;
+coupling_coefficients(2,1,1,1) = -alpha/3;
 coupling_coefficients(2,2,1,1) = alpha/5;
-% coupling_coefficients(2,2,2,1) = alpha/3;
+coupling_coefficients(2,2,2,1) = alpha/3;
 coupling_coefficients(2,2,2,2) = 0.8*alpha;
 
 %% Simulation parameters
 
-n_steps = 8;
+n_steps = 131072;
 
 order_RK = 4;
 
@@ -43,11 +43,13 @@ raman_parameters = [12e-3 , 32e-3];
 
 %% Initial conditions
 
-N = 2^20; % Number of time/frequency points
+N = 2^18; % Number of time/frequency points
 time_window = 160; % ps
 pulse_width = sqrt(dispersion_coefficients(1,3))/(alpha*nonlinearity_const);
 
-t0 = -time_window/10;
+% t0 = -time_window/10;
+t0 = 0;
+
 q = alpha*nonlinearity_const;
 c = 1 * sqrt(2/dispersion_coefficients(1,3));
 
