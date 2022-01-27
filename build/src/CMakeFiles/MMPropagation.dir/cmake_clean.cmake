@@ -1,0 +1,18 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/MMPropagation.dir/ComplexArray.cpp.o"
+  "CMakeFiles/MMPropagation.dir/DiscreteFourierTransform.cpp.o"
+  "CMakeFiles/MMPropagation.dir/LawsonRK.cpp.o"
+  "CMakeFiles/MMPropagation.dir/MultimodePropagation.cpp.o"
+  "CMakeFiles/MMPropagation.dir/Nonlinearity.cpp.o"
+  "CMakeFiles/MMPropagation.dir/RungeKutta.cpp.o"
+  "CMakeFiles/MMPropagation.dir/Sparse3DMatrix.cpp.o"
+  "CMakeFiles/MMPropagation.dir/readMatFile.cpp.o"
+  "CMakeFiles/MMPropagation.dir/writeMatFile.cpp.o"
+  "libMMPropagation.pdb"
+  "libMMPropagation.so"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/MMPropagation.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()
