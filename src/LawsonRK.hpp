@@ -20,15 +20,11 @@ public:
   
   ~LawsonRK();
 
-  void compute(const MultipleComplexArrays phi_in, MultipleComplexArrays& phi_out, const double z_final, const double delta_z);
+  void initializeLawson(const MultipleComplexArrays phi_in, const double delta_z);
+  MultipleComplexArrays compute(const double delta_z, const unsigned int nz, const double z_stop);
    
 private:
-  void compute_L(const vector<doubleArray> beta);
-
-  void compute_E1(const double h);
-  void initialize_E(const double h);
-  void compute_E();
-
+  void computeDifferentialOperator(const vector<doubleArray> beta);
   int factorial(int a);
 
 private:
@@ -42,7 +38,7 @@ private:
   vector<double> c;
 
   MultipleComplexArrays L;
-
+  
   vector<MultipleComplexArrays> E;
   MultipleComplexArrays E1;
 

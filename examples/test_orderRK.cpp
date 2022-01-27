@@ -49,18 +49,23 @@ int main()
   double delta_z = Z/NZ;
   LawsonRK solver(M,1.,NT,T,order_RK,1,beta,Q,fR,tau);
   
-  solver.compute(phi_in,phi_out,Z,delta_z);
+  solver.initializeLawson(phi_in,delta_z);
+  solver.compute(delta_z,NZ,Z);
   
   ComplexArray phi_petit(NT);
   phi_petit = phi_out[0];
 
+  NZ *= 2;
   delta_z /= 2;
-  solver.compute(phi_in,phi_out,Z,delta_z);
+  solver.initializeLawson(phi_in,delta_z);
+  solver.compute(delta_z,NZ,Z);
   ComplexArray phi(NT);
   phi = phi_out[0];
   
+  NZ *= 2;
   delta_z /= 2;
-  solver.compute(phi_in,phi_out,Z,delta_z);
+  solver.initializeLawson(phi_in,delta_z);
+  solver.compute(delta_z,NZ,Z);
   ComplexArray phi_grand(NT);
   phi_grand = phi_out[0];
   

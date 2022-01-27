@@ -92,7 +92,8 @@ int main()
     unsigned int nz = 8;
     
     //double t_start = omp_get_wtime();
-    mm_propagation.computeLawsonRK(nz);
+    mm_propagation.set_nz(nz);
+    mm_propagation.computeLawsonRK(1);
   
     //double t_stop = omp_get_wtime();
     //double cpu_time = (t_stop - t_start);

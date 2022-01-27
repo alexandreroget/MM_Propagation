@@ -33,10 +33,11 @@ public:
   MultimodePropagation(struct SimulationParameters initial_field);
   ~MultimodePropagation() { delete solver; }
   
-  void computeLawsonRK();
-  void computeLawsonRK(unsigned int nz2);
+  void computeLawsonRK(unsigned int n);  
+  void set_nz(unsigned int n_steps);
   
   MultipleComplexArrays getResult() const;
+  void saveResults(const MultipleComplexArrays phi, const string filename) const;
   
 private:
   double get_max(const vector<double> beta) const;

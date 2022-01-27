@@ -45,25 +45,30 @@ phi_out(in.n_modes,ComplexArray(in.nt,complex<double>(0.,0.)))
 }
 
 
-void MultimodePropagation::computeLawsonRK()
+void MultimodePropagation::computeLawsonRK(unsigned int n)
 {
-  double delta_z = z_final/nz; 
-  solver->compute(phi_in,phi_out,z_final,delta_z);
+  double delta_z = z_final/nz;
+  unsigned int nz2 = nz/n;
   
-  for(unsigned int p = 0 ; p < M ; p++) {
-    phi_out[p] /= conversion_factor;
+  solver->initializeLawson(phi_in,delta_z);
+  
+  for(unsigned int i = 0 ; i < n ; i++) {
+    MultipleComplexArrays phi_out(M,ComplexArray(nt));
+    
+    double z_stop = (i+1)*(z_final/n);
+    phi_out = solver->compute(delta_z,nz2,z_stop);
+    
+    for(unsigned int p = 0 ; p < M ; p++) {
+      phi_out[p] /= conversion_factor;
+    }
+    // saveResults(...);
   }
 }
 
 
-void MultimodePropagation::computeLawsonRK(unsigned int nz2)
+void MultimodePropagation::set_nz(unsigned int n_steps)
 {
-  double delta_z = z_final/nz2; 
-  solver->compute(phi_in,phi_out,z_final,delta_z);
-  
-  for(unsigned int p = 0 ; p < M ; p++) {
-    phi_out[p] /= conversion_factor;
-  }
+  nz = n_steps;
 }
 
 
@@ -72,8 +77,8 @@ MultipleComplexArrays MultimodePropagation::getResult() const
   return phi_out;
 }
 
-/*
-void MultimodePropagation::saveResults(const string filename) const
+
+void MultimodePropagation::saveResults(const MultipleComplexArrays phi, const string filename) const
 {
   ofstream file;
   file.open(filename,ios::out|ios::trunc);
@@ -85,7 +90,7 @@ void MultimodePropagation::saveResults(const string filename) const
     file<<t;
     
     for(unsigned int p = 0 ; p < M ; p++) {
-      complex<double> v = phi_out[p][i];
+      complex<double> v = phi[p][i];
       
       if(v.imag() >= 0) {
         file<<" ; "<<v.real()<<"+"<<v.imag()<<"j";
@@ -101,7 +106,7 @@ void MultimodePropagation::saveResults(const string filename) const
   
   file.close();
 }
-*/
+
 
 double MultimodePropagation::get_max(const vector<double> beta2) const
 {

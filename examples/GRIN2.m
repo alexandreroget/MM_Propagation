@@ -1,4 +1,4 @@
-filename = 'input_GRIN2';
+filename = 'film_GRIN2';
 
 %% Fiber parameters
 
@@ -27,9 +27,9 @@ coupling_coefficients(2,2,2,2) = 0.8*alpha;
 
 %% Simulation parameters
 
-n_steps = 131072;
+n_steps = 2^17;
 
-order_RK = 4;
+order_RK = 6;
 
 speed_of_light = 2.99792458e-4; % m/ps
 lambda = 1030e-9; % m, the center wavelength

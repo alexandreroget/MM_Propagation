@@ -111,8 +111,8 @@ void readComplexData(mat_t *mat, matvar_t *matvar, char* variable_name, mat_comp
 
 void setDispersionCoefficients(const double* data, struct SimulationParameters& in, unsigned int data_size)
 {
-  if(data_size == (in.n_modes * (in.max_dispersion_order + 1))) {
-    in.dispersion_coefficients = vector<doubleArray>(in.max_dispersion_order,doubleArray(in.n_modes));
+  if(data_size == (in.n_modes * (in.max_dispersion_order+1))) {
+    in.dispersion_coefficients = vector<doubleArray>(in.max_dispersion_order+1,doubleArray(in.n_modes));
   
     for(unsigned int i = 0 ; i <= in.max_dispersion_order ; i++) {
       for(unsigned int p = 0 ; p < in.n_modes ; p++) {
