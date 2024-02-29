@@ -192,7 +192,7 @@ In addition to compiling the entire MM_Propagation code, the makefile compiles a
 
 ## Run the propagation on GPU
 
-If you wish to run the propagation without the Raman effect, use the `MultimodePropagationGPU\_RamanOFF` class. Otherwise, use the `MultimodePropagationGPU\_RamanON` class.
+If you wish to run the propagation without the Raman effect, use the `MultimodePropagationGPU_RamanOFF` class. Otherwise, use the `MultimodePropagationGPU_RamanON` class.
 
 ```c++
 /* --- Set input parameters --- */
