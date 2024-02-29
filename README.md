@@ -118,7 +118,7 @@ nzv = {1,1,1,-SR/3};
 Q.addNonZeroValue(nzv);
 ```
 
-`coupling_coefficients` is defined in a `std::vector<Sparse3DArray>` of size $M \times NT$. Each element of the vector contains the non-zero coupling coefficients of a mode.
+`coupling_coefficients` is defined in a `std::vector<Sparse3DArray>` of size $M$. Each element of the vector contains the non-zero coupling coefficients of a mode.
 For example, `coupling_coefficients[0]` is the sparse 3D array of $Q^{(0)}$.
 
 2. Complex Arrays
@@ -151,7 +151,7 @@ for(unsigned int j = 0 ; j < nt ; j++) {
 }
 ```
 
-`initial_fields` is defined in a `ComplexArraysContainer` of size $M$. Each element of the vector contains the initial field of a mode.
+`initial_fields` is defined in a `ComplexArraysContainer` of size $M \times NT$. Each element of the vector contains the initial field of a mode.
 For example, `initial_fields[0]` contains all values of $\Phi^{(0)}(Z=0,:)$.
 
 ## Run the propagation on CPU
